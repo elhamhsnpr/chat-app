@@ -42,8 +42,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMessage", (message, callback) => {
-    io.emit("message", generateMessage(message));
-    callback();
+    const user = getUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit("message", generateMessage(message));
+      callback();
+    }
   });
 
   socket.on("disconnect", () => {
@@ -58,13 +62,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendLocation", (coords, callback) => {
-    io.emit(
-      "locationMessage",
-      generateLocationMessage(
-        `https://www.google.com/maps/?q=${coords.latitude},${coords.longitude}`
-      )
-    );
-    callback();
+    const user = getUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit(
+        "locationMessage",
+        generateLocationMessage(
+          `https://www.google.com/maps/?q=${coords.latitude},${coords.longitude}`
+        )
+      );
+      callback();
+    }
   });
 });
 
