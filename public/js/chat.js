@@ -19,6 +19,10 @@ const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
+const autoScrollBottom = () => {
+  $messages.scrollTop = $messages.scrollHeight;
+};
+
 socket.on("message", (message) => {
   console.log(message);
 
@@ -28,6 +32,7 @@ socket.on("message", (message) => {
     createdAt: moment(message.createdAt).format("h:mm a"),
   });
   $messages.insertAdjacentHTML("beforeend", html);
+  autoScrollBottom();
 });
 
 socket.on("locationMessage", (message) => {
@@ -45,6 +50,7 @@ socket.on("roomData", ({ room, users }) => {
     users,
   });
   document.querySelector("#sidebar").innerHTML = html;
+  autoScrollBottom();
 });
 
 $messageForm.addEventListener("submit", (e) => {
