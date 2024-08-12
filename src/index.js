@@ -33,10 +33,13 @@ io.on("connection", (socket) => {
     }
 
     socket.join(user.room);
-    socket.emit("message", generateMessage("Welcome!"));
+    socket.emit("message", generateMessage("Admin", "Welcome!"));
     socket.broadcast
       .to(user.room)
-      .emit("message", generateMessage(`${user.username} has joined!`));
+      .emit(
+        "message",
+        generateMessage("Admin", `${user.username} has joined!`)
+      );
 
     callback();
   });
@@ -45,7 +48,7 @@ io.on("connection", (socket) => {
     const user = getUser(socket.id);
 
     if (user) {
-      io.to(user.room).emit("message", generateMessage(message));
+      io.to(user.room).emit("message", generateMessage(user.username, message));
       callback();
     }
   });
@@ -56,7 +59,7 @@ io.on("connection", (socket) => {
     if (user) {
       io.to(user.room).emit(
         "message",
-        generateMessage(`${user.username} has left!`)
+        generateMessage("Admin", `${user.username} has left!`)
       );
     }
   });
@@ -68,6 +71,7 @@ io.on("connection", (socket) => {
       io.to(user.room).emit(
         "locationMessage",
         generateLocationMessage(
+          user.username,
           `https://www.google.com/maps/?q=${coords.latitude},${coords.longitude}`
         )
       );
